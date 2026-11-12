@@ -33,7 +33,7 @@ Share testing conventions, module scenarios, integration journeys, actual result
 - **Manual/visual:** responsive layout, chart usability and cross-module visual consistency. Record browser/device/viewport.
 
 ## 5. Cross-project baseline
-- [ ] Frontend production build succeeds.
+- [x] Frontend production build succeeds.
 - [ ] Backend starts with documented environment variables.
 - [ ] Migrations apply to a clean database.
 - [ ] Seed process works as intended.
@@ -158,11 +158,12 @@ Append entries; preserve history.
 | Date | Module/area | Branch or PR | Tests/commands actually executed | Result | Notes |
 |---|---|---|---|---|---|
 | Initial scaffold | Documentation only | — | No application tests executed | Not Run | This pack documents planned coverage only. |
+| 2026-11-13 | M0 — Project Foundation | main | `npm run typecheck`; `npm run build`; `npm run lint`; `curl -i http://localhost:5001/api/health`; `npm audit --omit=dev`; `npm audit` | Passed with known dependency advisory | Frontend/backend typechecking and builds passed; frontend lint passed; API health returned HTTP 200; production audit found 0 vulnerabilities. Full audit reported 10 moderate development-tooling findings involving minimatch. No automated application tests executed. |
 
 ## 9. Known issues and gaps
 | ID | Module | Issue/gap | Severity | Status | Owner/reference |
 |---|---|---|---|---|---|
-| — | — | No issues recorded yet | — | — | — |
+| SEC-001 | M0 — Project Foundation | Moderate minimatch advisory in development tooling dependency tree; compatible published ESLint and typescript-eslint versions still depend on affected minimatch 10.x | Moderate | Open — upstream fix pending | `npm audit`; `npm audit --omit=dev` reports 0 vulnerabilities |
 
 ## 10. Agent remarks
 Append concise, actionable observations. Do not present hypotheses as verified bugs.
