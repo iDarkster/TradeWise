@@ -159,6 +159,7 @@ Append entries; preserve history.
 |---|---|---|---|---|---|
 | Initial scaffold | Documentation only | — | No application tests executed | Not Run | This pack documents planned coverage only. |
 | 2026-11-13 | M0 — Project Foundation | main | `npm run typecheck`; `npm run build`; `npm run lint`; `curl -i http://localhost:5001/api/health`; `npm audit --omit=dev`; `npm audit` | Passed with known dependency advisory | Frontend/backend typechecking and builds passed; frontend lint passed; API health returned HTTP 200; production audit found 0 vulnerabilities. Full audit reported 10 moderate development-tooling findings involving minimatch. No automated application tests executed. |
+| 2026-11-13 | M0 — PostgreSQL & Prisma Foundation | main | Prisma Client generation; PostgreSQL Docker health; `/api/health/db` (HTTP 200); `npm run typecheck`; `npm run build`; `npm run lint`; `git diff --check` | Passed | Prisma 7.10.1 generated successfully. PostgreSQL 17 container healthy on host port 5433. Prisma successfully executed `SELECT 1` through the PostgreSQL adapter. Frontend and backend typechecks, builds, and lint checks passed. Automated application tests not run. |
 
 ## 9. Known issues and gaps
 | ID | Module | Issue/gap | Severity | Status | Owner/reference |
