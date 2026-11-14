@@ -1,0 +1,24 @@
+-- Reconciles the M1 security-audit append-only trigger with the SET NULL
+-- foreign keys introduced by 20261114033942_m1_identity_database_foundation.
+--
+-- `SecurityAuditLog.userId` and `SecurityAuditLog.sessionId` both use
+-- ON DELETE SET NULL so historical security events survive the detachment of
+-- a User or AuthSession. PostgreSQL implements ON DELETE SET NULL as an
+-- internal UPDATE, which the strict append-only trigger installed by the
+-- foundation migration rejected. That made legitimate foreign-key deletion
+-- fail with "Security audit log entries are immutable."
+--
+-- The replacement trigger keeps the append-only guarantee for every write
+-- that actually changes an audit record, and permits exactly one narrow
+-- class of UPDATE: detaching a single foreign key (userId or sessionId) to
+-- NULL while leaving eventType, metadata, createdAt and the other foreign
+-- key untouched. This mirrors the behaviour already present in the
+-- development and test databases, so a database built from the migration
+-- history reproduces their structure exactly.
+--
+-- The function body is written on a single line and ends with a single space
+-- before the closing dollar quote, so the stored function source is
+-- byte-identical to the one already present in the development and test
+-- databases.
+CREATE OR REPLACE FUNCTION prevent_security_audit_log_mutation()
+RETURNS TRIGGER AS $tw$ BEGIN IF TG_OP = 'UPDATE' AND NEW."eventType" IS NOT DISTINCT FROM OLD."eventType" AND NEW."metadata" IS NOT DISTINCT FROM OLD."metadata" AND NEW."createdAt" IS NOT DISTINCT FROM OLD."createdAt" AND ((OLD."userId" IS NOT NULL AND NEW."userId" IS NULL AND NEW."sessionId" IS NOT DISTINCT FROM OLD."sessionId") OR (OLD."sessionId" IS NOT NULL AND NEW."sessionId" IS NULL AND NEW."userId" IS NOT DISTINCT FROM OLD."userId")) THEN RETURN NEW; END IF; RAISE EXCEPTION 'Security audit log entries are immutable.'; END; $tw$ LANGUAGE plpgsql;

@@ -21,6 +21,12 @@ enum UserRole {
   ADMIN
 }
 
+enum AuthRateLimitIdentifierType {
+  ACCOUNT
+  EMAIL
+  IP
+}
+
 enum LessonProgressStatus {
   NOT_STARTED
   IN_PROGRESS
@@ -81,8 +87,16 @@ model User {
   role         UserRole  @default(USER)
   isActive     Boolean   @default(true)
   deletedAt    DateTime? @db.Timestamptz(6)
+  lastLoginAt    DateTime? @db.Timestamptz(6)
+  lastActivityAt DateTime? @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   profile Profile?
+
+  authSessions      AuthSession[]
+  securityAuditLogs SecurityAuditLog[] @relation("SecurityAuditLogUser")
 
   createdModules Module[] @relation("ModuleCreated")
   updatedModules Module[] @relation("ModuleUpdated")
@@ -105,6 +119,8 @@ model User {
 
   userAchievements  UserAchievement[]
   adminActivityLogs AdminActivityLog[]
+
+  @@index([createdAt])
 }
 
 model Profile {
@@ -115,6 +131,57 @@ model Profile {
   avatarUrl String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuthSession {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @db.Uuid
+  tokenDigest     String    @unique @db.Char(64)
+  csrfTokenDigest String    @db.Char(64)
+  userAgent       String?   @db.VarChar(512)
+
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+  lastActivityAt DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt      DateTime  @db.Timestamptz(6)
+  revokedAt      DateTime? @db.Timestamptz(6)
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  securityAuditLogs SecurityAuditLog[] @relation("SecurityAuditLogSession")
+
+  @@index([userId, lastActivityAt(sort: Desc)])
+  @@index([expiresAt])
+}
+
+model AuthRateLimit {
+  id             String                      @id @default(uuid()) @db.Uuid
+  scope          String                      @db.VarChar(64)
+  identifierType AuthRateLimitIdentifierType
+  identifierHash String                      @db.Char(64)
+  attemptCount   Int                         @default(0)
+  windowStartedAt DateTime                   @db.Timestamptz(6)
+  blockedUntil   DateTime?                   @db.Timestamptz(6)
+  expiresAt      DateTime                    @db.Timestamptz(6)
+  createdAt      DateTime                    @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime                    @updatedAt @db.Timestamptz(6)
+
+  @@unique([scope, identifierType, identifierHash])
+  @@index([expiresAt])
+}
+
+model SecurityAuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  sessionId String?  @db.Uuid
+  eventType String   @db.VarChar(96)
+  metadata  Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user    User?        @relation("SecurityAuditLogUser", fields: [userId], references: [id], onDelete: SetNull)
+  session AuthSession? @relation("SecurityAuditLogSession", fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([sessionId, createdAt(sort: Desc)])
+  @@index([eventType, createdAt(sort: Desc)])
 }
 
 // ==========================================
