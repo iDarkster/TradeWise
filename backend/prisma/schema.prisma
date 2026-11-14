@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -6,4 +5,531 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum QuizStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum LessonProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ScenarioGenerationType {
+  SYSTEM_GENERATED
+  ADMIN_CREATED
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  EXECUTED
+  REJECTED
+  CANCELLED
+}
+
+enum ProductType {
+  DELIVERY
+  INTRADAY
+}
+
+enum QuizAttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  ABANDONED
+}
+
+// ==========================================
+// 1. IDENTITY & ACCESS
+// ==========================================
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  passwordHash String
+  role         UserRole  @default(USER)
+  isActive     Boolean   @default(true)
+  deletedAt    DateTime? @db.Timestamptz(6)
+
+  profile Profile?
+
+  createdModules Module[] @relation("ModuleCreated")
+  updatedModules Module[] @relation("ModuleUpdated")
+
+  createdLessons Lesson[] @relation("LessonCreated")
+  updatedLessons Lesson[] @relation("LessonUpdated")
+
+  createdQuizzes Quiz[] @relation("QuizCreated")
+  updatedQuizzes Quiz[] @relation("QuizUpdated")
+
+  createdScenarios MarketScenario[] @relation("ScenarioCreated")
+
+  lessonProgress LessonProgress[]
+  quizAttempts   QuizAttempt[]
+
+  watchlists          Watchlist[]
+  chartConfigurations ChartConfiguration[]
+
+  portfolios Portfolio[]
+
+  userAchievements  UserAchievement[]
+  adminActivityLogs AdminActivityLog[]
+}
+
+model Profile {
+  id        String  @id @default(uuid()) @db.Uuid
+  userId    String  @unique @db.Uuid
+  username  String  @unique
+  fullName  String
+  avatarUrl String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// 2. LEARNING MANAGEMENT
+// ==========================================
+
+model Module {
+  id          String @id @default(uuid()) @db.Uuid
+  createdById String @db.Uuid
+  updatedById String @db.Uuid
+
+  title      String
+  status     String
+  orderIndex Int
+
+  createdBy User @relation("ModuleCreated", fields: [createdById], references: [id])
+  updatedBy User @relation("ModuleUpdated", fields: [updatedById], references: [id])
+
+  lessons Lesson[]
+
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([status, orderIndex])
+}
+
+model Lesson {
+  id          String @id @default(uuid()) @db.Uuid
+  moduleId    String @db.Uuid
+  createdById String @db.Uuid
+  updatedById String @db.Uuid
+
+  title  String
+  status String
+
+  module    Module @relation(fields: [moduleId], references: [id])
+  createdBy User   @relation("LessonCreated", fields: [createdById], references: [id])
+  updatedBy User   @relation("LessonUpdated", fields: [updatedById], references: [id])
+
+  quizzes   Quiz[]
+  progress  LessonProgress[]
+  scenarios LessonScenario[]
+
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([moduleId, status])
+}
+
+model Quiz {
+  id          String @id @default(uuid()) @db.Uuid
+  lessonId    String @db.Uuid
+  createdById String @db.Uuid
+  updatedById String @db.Uuid
+
+  passingScore Int
+  status       QuizStatus @default(DRAFT)
+  lesson       Lesson     @relation(fields: [lessonId], references: [id])
+  createdBy    User       @relation("QuizCreated", fields: [createdById], references: [id])
+  updatedBy    User       @relation("QuizUpdated", fields: [updatedById], references: [id])
+
+  questions Question[]
+  attempts  QuizAttempt[]
+
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([lessonId, status])
+}
+
+model Question {
+  id         String  @id @default(uuid()) @db.Uuid
+  quizId     String  @db.Uuid
+  scenarioId String? @db.Uuid
+
+  questionText String
+  type         QuestionType
+  points       Int
+
+  quiz     Quiz            @relation(fields: [quizId], references: [id])
+  scenario MarketScenario? @relation(fields: [scenarioId], references: [id])
+
+  options Option[]
+  answers UserAnswer[]
+
+  @@unique([id, quizId])
+  @@index([quizId])
+  @@index([scenarioId])
+}
+
+model Option {
+  id         String @id @default(uuid()) @db.Uuid
+  questionId String @db.Uuid
+
+  optionText String
+  isCorrect  Boolean
+
+  question Question     @relation(fields: [questionId], references: [id])
+  answers  UserAnswer[]
+
+  @@unique([id, questionId])
+  @@index([questionId])
+}
+
+model LessonProgress {
+  id       String @id @default(uuid()) @db.Uuid
+  userId   String @db.Uuid
+  lessonId String @db.Uuid
+
+  status      LessonProgressStatus @default(NOT_STARTED)
+  completedAt DateTime?            @db.Timestamptz(6)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+}
+
+model QuizAttempt {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  quizId String @db.Uuid
+
+  status QuizAttemptStatus @default(IN_PROGRESS)
+  score  Int?
+  passed Boolean?
+
+  startedAt   DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt   DateTime  @db.Timestamptz(6)
+  submittedAt DateTime? @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+  quiz Quiz @relation(fields: [quizId], references: [id])
+
+  answers UserAnswer[]
+
+  @@unique([id, quizId])
+  @@index([userId, quizId, createdAt(sort: Desc)])
+  @@index([quizId])
+}
+
+model UserAnswer {
+  id               String @id @default(uuid()) @db.Uuid
+  attemptId        String @db.Uuid
+  quizId           String @db.Uuid
+  questionId       String @db.Uuid
+  selectedOptionId String @db.Uuid
+
+  attempt        QuizAttempt @relation(fields: [attemptId, quizId], references: [id, quizId], onDelete: Cascade)
+  question       Question    @relation(fields: [questionId, quizId], references: [id, quizId])
+  selectedOption Option      @relation(fields: [selectedOptionId, questionId], references: [id, questionId])
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+  @@index([selectedOptionId])
+}
+
+// ==========================================
+// 3. MARKET SCENARIOS & SYNTHETIC CANDLES
+// ==========================================
+
+model MarketScenario {
+  id          String  @id @default(uuid()) @db.Uuid
+  createdById String? @db.Uuid
+
+  name           String
+  description    String
+  scenarioType   String
+  difficulty     Difficulty
+  generationType ScenarioGenerationType
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  createdBy User? @relation("ScenarioCreated", fields: [createdById], references: [id])
+
+  candles     ScenarioCandle[]
+  questions   Question[]
+  lessonLinks LessonScenario[]
+
+  @@index([createdById])
+}
+
+model ScenarioCandle {
+  id         String @id @default(uuid()) @db.Uuid
+  scenarioId String @db.Uuid
+
+  sequenceIndex Int
+  timestamp     DateTime @db.Timestamptz(6)
+
+  open   Decimal @db.Decimal(18, 4)
+  high   Decimal @db.Decimal(18, 4)
+  low    Decimal @db.Decimal(18, 4)
+  close  Decimal @db.Decimal(18, 4)
+  volume BigInt
+
+  scenario MarketScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@unique([scenarioId, sequenceIndex])
+}
+
+model LessonScenario {
+  lessonId   String @db.Uuid
+  scenarioId String @db.Uuid
+
+  displayOrder Int?
+
+  lesson   Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  scenario MarketScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@id([lessonId, scenarioId])
+  @@index([scenarioId])
+}
+
+// ==========================================
+// 4. MARKET INSTRUMENTS & WATCHLISTS
+// ==========================================
+
+model Instrument {
+  id                   String  @id @default(uuid()) @db.Uuid
+  symbol               String
+  exchange             String
+  providerInstrumentId String?
+
+  watchlistItems      WatchlistItem[]
+  chartConfigurations ChartConfiguration[]
+
+  orders   Order[]
+  holdings Holding[]
+
+  @@unique([exchange, symbol])
+}
+
+model Watchlist {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  name   String
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items WatchlistItem[]
+
+  @@index([userId])
+}
+
+model WatchlistItem {
+  id           String @id @default(uuid()) @db.Uuid
+  watchlistId  String @db.Uuid
+  instrumentId String @db.Uuid
+
+  addedAt DateTime @default(now()) @db.Timestamptz(6)
+
+  watchlist  Watchlist  @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  instrument Instrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+
+  @@unique([watchlistId, instrumentId])
+  @@index([instrumentId])
+}
+
+model ChartConfiguration {
+  id           String @id @default(uuid()) @db.Uuid
+  userId       String @db.Uuid
+  instrumentId String @db.Uuid
+
+  chartType String
+  settings  Json
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instrument Instrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([instrumentId])
+}
+
+// ==========================================
+// 5. PAPER TRADING
+// ==========================================
+
+model Portfolio {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+
+  name           String
+  initialBalance Decimal @db.Decimal(20, 2)
+  cashBalance    Decimal @db.Decimal(20, 2)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  orders        Order[]
+  holdings      Holding[]
+  ledgerEntries PortfolioLedgerEntry[]
+
+  @@index([userId])
+}
+
+model Order {
+  id           String @id @default(uuid()) @db.Uuid
+  portfolioId  String @db.Uuid
+  instrumentId String @db.Uuid
+
+  side        OrderSide
+  type        OrderType
+  status      OrderStatus @default(PENDING)
+  productType ProductType
+
+  quantity   Int
+  limitPrice Decimal? @db.Decimal(18, 4)
+
+  createdAt  DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(6)
+  executedAt DateTime? @db.Timestamptz(6)
+
+  portfolio  Portfolio  @relation(fields: [portfolioId], references: [id])
+  instrument Instrument @relation(fields: [instrumentId], references: [id])
+
+  trade Trade?
+
+  @@index([instrumentId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([portfolioId, status, createdAt(sort: Desc)])
+  @@index([portfolioId, instrumentId, createdAt(sort: Desc)])
+}
+
+model Trade {
+  id      String @id @default(uuid()) @db.Uuid
+  orderId String @unique @db.Uuid
+
+  executedQty   Int
+  executedPrice Decimal @db.Decimal(18, 4)
+  totalValue    Decimal @db.Decimal(20, 2)
+
+  executedAt DateTime @db.Timestamptz(6)
+
+  costBasisAmount Decimal? @db.Decimal(20, 4)
+  realizedPnl     Decimal? @db.Decimal(20, 2)
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  ledgerEntries PortfolioLedgerEntry[]
+}
+
+model Holding {
+  id           String @id @default(uuid()) @db.Uuid
+  portfolioId  String @db.Uuid
+  instrumentId String @db.Uuid
+
+  quantity        Int
+  averageBuyPrice Decimal @db.Decimal(18, 4)
+
+  portfolio  Portfolio  @relation(fields: [portfolioId], references: [id])
+  instrument Instrument @relation(fields: [instrumentId], references: [id])
+
+  @@unique([portfolioId, instrumentId])
+  @@index([instrumentId])
+}
+
+model PortfolioLedgerEntry {
+  id          String  @id @default(uuid()) @db.Uuid
+  portfolioId String  @db.Uuid
+  tradeId     String? @db.Uuid
+
+  entryType    String
+  amount       Decimal @db.Decimal(20, 2)
+  balanceAfter Decimal @db.Decimal(20, 2)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id])
+  trade     Trade?    @relation(fields: [tradeId], references: [id])
+
+  @@index([portfolioId, createdAt])
+  @@index([tradeId])
+}
+
+// ==========================================
+// 6. ACHIEVEMENTS & ADMIN AUDIT
+// ==========================================
+
+model Achievement {
+  id          String @id @default(uuid()) @db.Uuid
+  name        String
+  description String
+  xpReward    Int
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String @id @default(uuid()) @db.Uuid
+  userId        String @db.Uuid
+  achievementId String @db.Uuid
+
+  earnedAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@index([achievementId])
+}
+
+model AdminActivityLog {
+  id          String @id @default(uuid()) @db.Uuid
+  adminUserId String @db.Uuid
+
+  action     String
+  entityType String
+  entityId   String
+
+  metadata  Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  adminUser User @relation(fields: [adminUserId], references: [id])
+
+  @@index([adminUserId, createdAt])
+  @@index([entityType, entityId])
 }

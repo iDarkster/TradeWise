@@ -1,0 +1,20 @@
+digraph ER {
+graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.7", splines=polyline, fontname="Helvetica", label="4. Instruments, watchlists & charts", labelloc="t", fontsize=22];
+node [shape=plain, fontname="Helvetica"];
+edge [fontname="Helvetica", fontsize=8, color="#53657D", arrowsize=0.7];
+"User" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>User</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">email: String [UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">passwordHash: String</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">role: UserRole</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">isActive: Boolean</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">deletedAt: DateTime?</FONT></TD></TR></TABLE>>];
+"Instrument" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>Instrument</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">symbol: String [UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">exchange: String [UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">providerInstrumentId: String?</FONT></TD></TR></TABLE>>];
+"Watchlist" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>Watchlist</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">userId: String [FK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">name: String</FONT></TD></TR></TABLE>>];
+"WatchlistItem" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>WatchlistItem</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">watchlistId: String [FK,UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">instrumentId: String [FK,UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">addedAt: DateTime</FONT></TD></TR></TABLE>>];
+"ChartConfiguration" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>ChartConfiguration</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">userId: String [FK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">instrumentId: String [FK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">chartType: String</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">settings: Json</FONT></TD></TR></TABLE>>];
+"Watchlist" -> "User" [dir=both, arrowtail=none, arrowhead=none, label="* : 1
+userId → id"];
+"WatchlistItem" -> "Watchlist" [dir=both, arrowtail=none, arrowhead=none, label="* : 1
+watchlistId → id"];
+"WatchlistItem" -> "Instrument" [dir=both, arrowtail=none, arrowhead=none, label="* : 1
+instrumentId → id"];
+"ChartConfiguration" -> "User" [dir=both, arrowtail=none, arrowhead=none, label="* : 1
+userId → id"];
+"ChartConfiguration" -> "Instrument" [dir=both, arrowtail=none, arrowhead=none, label="* : 1
+instrumentId → id"];
+}

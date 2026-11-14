@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "typecheck": "npm run db:generate && tsc --noEmit",
     "db:generate": "prisma generate",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +34,7 @@
     "prisma": "^7.10.1",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.72.2"
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.0"
   }
 }

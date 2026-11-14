@@ -27,3 +27,4 @@ coverage/
 
 # Generated Prisma Client
 /backend/src/generated/prisma/
+.env.test

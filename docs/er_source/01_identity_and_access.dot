@@ -1,0 +1,12 @@
+digraph ER {
+graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.7", splines=polyline, fontname="Helvetica", label="1. Identity & access", labelloc="t", fontsize=22];
+node [shape=plain, fontname="Helvetica"];
+edge [fontname="Helvetica", fontsize=8, color="#53657D", arrowsize=0.7];
+"User" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>User</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">email: String [UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">passwordHash: String</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">role: UserRole</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">isActive: Boolean</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">deletedAt: DateTime?</FONT></TD></TR></TABLE>>];
+"Profile" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>Profile</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">userId: String [FK,UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">username: String [UQ]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">fullName: String</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">avatarUrl: String?</FONT></TD></TR></TABLE>>];
+"AdminActivityLog" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" COLOR="#9AA9BC"><TR><TD BGCOLOR="#172B4D" ALIGN="LEFT"><FONT COLOR="white"><B>AdminActivityLog</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">id: String [PK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">adminUserId: String [FK]</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">action: String</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">entityType: String</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">entityId: String</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">metadata: Json?</FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="9">createdAt: DateTime</FONT></TD></TR></TABLE>>];
+"Profile" -> "User" [dir=both, arrowtail=none, arrowhead=none, label="1 : 1
+userId → id"];
+"AdminActivityLog" -> "User" [dir=both, arrowtail=none, arrowhead=none, label="* : 1
+adminUserId → id"];
+}
