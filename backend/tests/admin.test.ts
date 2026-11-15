@@ -513,6 +513,56 @@ describe("administrator user listing", () => {
     expect(bySearch.body.data.users[0].id).toBe(learner.id);
   });
 
+  it("searches users by profile full name, email and username case-insensitively", async () => {
+    const admin = await createAdminSession();
+    const stamp = randomUUID().replace(/-/g, "").slice(0, 6);
+    const learner = trackUser(
+      await createUserDirect({
+        fullName: `Special Learner ${stamp}`,
+        username: `learner_${stamp}`,
+        email: `search_${stamp}@example.com`,
+      }),
+    );
+
+    // Search by full name partial (lowercase)
+    const byFullName = await request(app)
+      .get("/api/admin/users?search=special+learner")
+      .set("Cookie", admin.cookie);
+    expect(byFullName.status).toBe(200);
+    const byFullNameIds = byFullName.body.data.users.map(
+      (u: { id: string }) => u.id,
+    );
+    expect(byFullNameIds).toContain(learner.id);
+
+    // Search by username partial (uppercase)
+    const byUsername = await request(app)
+      .get(`/api/admin/users?search=LEARNER_${stamp.toUpperCase()}`)
+      .set("Cookie", admin.cookie);
+    expect(byUsername.status).toBe(200);
+    const byUsernameIds = byUsername.body.data.users.map(
+      (u: { id: string }) => u.id,
+    );
+    expect(byUsernameIds).toContain(learner.id);
+
+    // Search by email partial
+    const byEmail = await request(app)
+      .get(`/api/admin/users?search=SEARCH_${stamp}`)
+      .set("Cookie", admin.cookie);
+    expect(byEmail.status).toBe(200);
+    const byEmailIds = byEmail.body.data.users.map(
+      (u: { id: string }) => u.id,
+    );
+    expect(byEmailIds).toContain(learner.id);
+
+    // Combined search, role, and status filter
+    const combined = await request(app)
+      .get(`/api/admin/users?search=${stamp}&role=USER&status=ACTIVE`)
+      .set("Cookie", admin.cookie);
+    expect(combined.status).toBe(200);
+    expect(combined.body.data.users).toHaveLength(1);
+    expect(combined.body.data.users[0].id).toBe(learner.id);
+  });
+
   it("excludes deleted accounts unless they are requested explicitly", async () => {
     const admin = await createAdminSession();
     const learner = trackUser(

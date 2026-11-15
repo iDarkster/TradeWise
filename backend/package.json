@@ -12,7 +12,13 @@
     "lint": "eslint .",
     "test": "vitest run",
     "admin:bootstrap": "tsx src/scripts/bootstrapAdmin.ts",
-    "rate-limits:cleanup": "tsx src/scripts/cleanupRateLimits.ts"
+    "rate-limits:cleanup": "tsx src/scripts/cleanupRateLimits.ts",
+    "seed:dev": "tsx src/scripts/seedDevAccounts.ts",
+    "db:seed": "tsx src/scripts/seedDevAccounts.ts",
+    "ratelimit:clear:dev": "tsx src/scripts/clearRateLimits.ts"
+  },
+  "prisma": {
+    "seed": "tsx src/scripts/seedDevAccounts.ts"
   },
   "keywords": [],
   "author": "",

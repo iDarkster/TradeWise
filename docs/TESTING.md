@@ -93,6 +93,32 @@ npx prisma migrate deploy --config prisma7.config.ts
 
 For a test database, source `.env.test` instead. Check the active `DATABASE_URL` target before running migration commands. Do not paste or print connection strings into chat or logs.
 
+### Seed development test accounts
+
+To populate the local development database with five standard test accounts (1 ADMIN + 4 USERs):
+
+```bash
+# From repository root:
+npm run seed:dev
+
+# Or from backend/:
+npm run seed:dev
+```
+
+This operation is idempotent and safe for repeated local development runs. See [`docs/DEV_ACCOUNTS.md`](./DEV_ACCOUNTS.md) for the complete list of development credentials, roles, and testing scopes.
+
+### Clear local registration rate limits
+
+To clear local development registration rate-limit buckets (strictly guarded against production):
+
+```bash
+# From repository root:
+npm run dev:ratelimit:clear
+
+# Or from backend/:
+npm run ratelimit:clear:dev
+```
+
 ### M0 closing note — supplied project snapshot
 
 - **Implemented:** PostgreSQL/Docker and Prisma 7 foundation; schema; five migrations; database checks/indexes/FK policies; ledger immutability triggers; portfolio creation service; order execution service.
@@ -106,23 +132,24 @@ The implementing agent for each module must replace the placeholder with a conci
 
 ### M1 — Identity & Access
 
-- **Implemented:** Registration, login, logout and password change; opaque database-backed sessions with sliding 30-day expiry and throttled activity writes; session-bound CSRF protection; profile read/update; PostgreSQL-backed login and registration rate limiting with keyed HMAC identifiers and trusted-proxy handling; a separate append-only `SecurityAuditLog`; the interactive `npm run admin:bootstrap` administrator bootstrap; administrator user listing, details, suspension, reactivation and audit-log access; reusable hand-written validation, centralised error handling and validated environment configuration. New backend layout: `src/config`, `src/middleware`, `src/routes`, `src/controllers`, `src/utils`, `src/services`, `src/scripts`.
+- **Implemented:**
+  - Backend: Registration, login, logout and password change; opaque database-backed sessions with sliding 30-day expiry and throttled activity writes; session-bound CSRF protection; profile read/update; PostgreSQL-backed login and registration rate limiting with keyed HMAC identifiers and trusted-proxy handling; a separate append-only `SecurityAuditLog`; interactive `admin:bootstrap` command; admin user management (search by full name, email, username; status/role filters; suspension and reactivation); admin audit-log inspection (case-insensitive substring action search); dev test account seeder (`npm run seed:dev`); dev rate-limit clearing utility (`npm run dev:ratelimit:clear`).
+  - Frontend: Reconstructed foundation according to `SPECIFICATION.md` and `DESIGN.md`; complete auth flows (Login, Register with live password validation and human-readable rate-limit retry feedback); Settings pages (Profile with immutable email, Change Password, Active Sessions with revocation); Admin Portal (direct landing for admin role, User Management with combined filter form, loading states, and reset, User Details with suspend/reactivate modals, and Security Audit Logs with partial action search and clear filters); route guards; global navigation and profile dropdown.
 - **Verification actually run:**
-  - `npx vitest run` (from `backend/`, with `.env.test` sourced): **201 passed / 201 total**, across 11 test files — 28 Module 0 regression tests included and unchanged.
-  - `npm run typecheck`: passed, no TypeScript errors.
-  - `npm run lint`: passed, no ESLint errors.
-  - `npm run build`: passed, production build produced.
-  - `npx prisma migrate status --config prisma7.config.ts` for both `tradewise` and `tradewise_test`: `Database schema is up to date!` (8 migrations).
-  - `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma`: `No difference detected.`
-  - A scratch database built from the migration history was compared with `pg_dump --schema-only` against the development database: identical.
-  - `npm run admin:bootstrap` was executed end to end against the development database: the administrator, its profile and the `ADMIN_BOOTSTRAPPED` audit event were created, and a second run was refused.
+  - Backend integration tests: **232 passed / 232 total** across 13 test files (including 28 M0 regression tests, seed tests, and rate-limit clear tests).
+  - Backend typecheck: passed (0 errors).
+  - Backend lint: passed (0 errors).
+  - Backend build: passed (production output generated).
+  - Frontend unit/integration tests: **59 passed / 59 total** across 4 test suites.
+  - Frontend typecheck: passed (0 errors).
+  - Frontend lint: passed (0 errors).
+  - Frontend build: passed (`tsc -b && vite build` succeeded).
+  - Live API testing: verified against running server (`http://localhost:5001`) with cookie session authentication for `GET /api/admin/users?search=Alice` and `GET /api/admin/audit-logs?action=login` / `action=suspend`.
 - **Known gaps / next dependency:**
-  - Email verification, email change, forgot-password and password-reset flows are out of scope by decision; email is immutable through the profile endpoints.
-  - The full account-closure workflow (pending-order cancellation, resource release, settlement consent, anonymisation) is still outstanding and remains open in `docs/DECISIONS.md`.
-  - Administrator `updatedAt` is maintained by Prisma's `@updatedAt`, so a direct SQL write outside the application does not move it.
-  - The ER diagram and `docs/er_source/` are a Module 0 snapshot and must be regenerated by the project owner against the current schema; they were deliberately not touched.
-  - Frontend integration needs the exact CORS origins and cookie/CORS decisions to be coordinated with the frontend owner.
-- **Closing agent / date:** OpenCode (MiniMax M3.1 Flash), 2026-11-14.
+  - Email verification, email change, forgot-password and password-reset flows are out of scope by decision; email is immutable through profile endpoints.
+  - Account-closure workflow is tracked as an open decision in `docs/DECISIONS.md`.
+  - M2 (Learning Management) and M4 (Market Data) are the next unblocked modules on the dependency roadmap.
+- **Closing agent / date:** Antigravity, 2026-11-15.
 
 ### M2 — Learning Management
 

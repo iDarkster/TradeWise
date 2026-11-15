@@ -81,6 +81,7 @@ function buildWhere(query: AdminUserListQuery): Prisma.UserWhereInput {
     where.OR = [
       { email: { contains: query.search, mode: "insensitive" } },
       { profile: { username: { contains: query.search, mode: "insensitive" } } },
+      { profile: { fullName: { contains: query.search, mode: "insensitive" } } },
     ];
   }
 

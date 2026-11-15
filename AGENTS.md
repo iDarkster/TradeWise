@@ -19,7 +19,8 @@ Build a coherent MVP before optional features.
 | Document | Authority / purpose | Read when |
 |---|---|---|
 | [`docs/DECISIONS.md`](./docs/DECISIONS.md) | Approved product, architecture, data, financial and business-rule decisions; implementation status; unresolved questions | Before changing schema, APIs, business logic, data lifecycle or product behavior |
-| [`frontend/DESIGN.md`](./frontend/DESIGN.md) | Frontend visual language, tokens, components and UI conventions | Before any frontend work |
+| [`frontend/DESIGN.md`](./frontend/DESIGN.md) | Short frontend design entry point and navigation to the canonical specification | Before any frontend work |
+| [`frontend/SPECIFICATION.md`](./frontend/SPECIFICATION.md) | **Canonical frontend engineering specification**: stack, visual tokens, routes, shell, components, responsive behavior, accessibility and frontend testing standards | Before designing, implementing or reviewing frontend work |
 | [`docs/TESTING.md`](./docs/TESTING.md) | How to run tests by module, minimum verification expectations, and concise module handoff notes | Before testing and before closing a module |
 | [`README.md`](./README.md) | Project entry point and setup overview | On initial setup |
 
@@ -48,23 +49,24 @@ TradeWise/
 ├── AGENTS.md                         # This file: master project map and agent instructions
 ├── README.md                         # Setup and project entry point
 ├── .nvmrc                            # Node version
+├── .env.example                      # Safe template for local environment variables
 ├── package.json                      # Root workspace configuration
 ├── docker-compose.yml                # Local PostgreSQL service
 ├── frontend/
-│   ├── DESIGN.md                     # Frontend design authority; teammate-owned
-│   └── src/                          # Planned application source
-│       ├── components/
-│       │   ├── ui/                   # Generic reusable UI primitives
-│       │   ├── layout/               # App shell, navigation, shared layouts
-│       │   └── charts/               # Reusable chart presentation
-│       ├── modules/                  # Feature-specific UI by M1–M7
-│       ├── pages/                    # Route-level pages
+│   ├── DESIGN.md                     # Short entry point to frontend standards
+│   ├── SPECIFICATION.md              # Canonical frontend engineering specification
+│   └── src/                          # React + Vite application source
+│       ├── components/               # Shared UI, navigation, data-display, charts and feedback
+│       ├── features/                 # Target domain feature slices (see SPECIFICATION.md)
+│       ├── modules/                  # Existing starter scaffold; do not expand as a competing pattern
+│       ├── pages/                    # Route-level composition where appropriate
 │       ├── hooks/                    # Shared frontend hooks
 │       └── services/                 # API clients and frontend service wrappers
 ├── backend/
 │   ├── package.json                  # Backend scripts and dependencies
 │   ├── tsconfig.json
 │   ├── eslint.config.js
+│   ├── vitest.config.ts              # Backend test runner configuration
 │   ├── prisma7.config.ts             # Prisma 7 configuration
 │   ├── prisma/
 │   │   ├── schema.prisma             # Database model and relations
@@ -72,18 +74,21 @@ TradeWise/
 │   ├── src/
 │   │   ├── app.ts                    # Express app configuration
 │   │   ├── server.ts                 # HTTP server entry point
-│   │   ├── config/                   # Environment/configuration (planned)
-│   │   ├── middleware/               # Auth, validation, error handling (planned)
-│   │   ├── routes/                   # REST route registration (planned)
-│   │   ├── controllers/              # HTTP request/response handling (planned)
+│   │   ├── config/                   # Validated environment configuration
+│   │   ├── middleware/               # Auth, CSRF, validation, error handling
+│   │   ├── routes/                   # REST route registration
+│   │   ├── controllers/              # HTTP request/response handling
 │   │   ├── services/                 # Business logic and domain operations
-│   │   ├── utils/                    # Shared backend utilities (planned)
+│   │   ├── scripts/                  # Administrator bootstrap command
+│   │   ├── types/                    # Shared Express type augmentation
+│   │   ├── utils/                    # Shared backend helpers
 │   │   └── lib/
 │   │       └── prisma.ts             # Shared Prisma client
-│   └── tests/
-│       └── orderExecution.test.ts    # PostgreSQL integration tests for M6 foundation
+│   └── tests/                        # PostgreSQL integration tests (M0 and M1)
 └── docs/
     ├── DECISIONS.md                  # Approved decisions and decision history
+    ├── DATABASE_CHANGELOG.md         # Database structure changes and verification
+    ├── API_IDENTITY.md               # Module 1 API reference
     └── TESTING.md                   # Module test commands and closing notes
 ```
 
@@ -97,7 +102,8 @@ TradeWise/
 - `middleware/` owns cross-cutting request behavior such as authentication, authorization, validation and error handling.
 - `utils/` is for genuinely shared helpers; do not use it as a dumping ground.
 - Frontend generic primitives stay in `components/ui`; shared shell/navigation stays in `components/layout`; reusable chart rendering stays in `components/charts`.
-- Feature-specific compositions belong in `frontend/src/modules/<module>/`, not in the generic component library.
+- Follow the canonical feature-slice organization in `frontend/SPECIFICATION.md` for new domain UI. The existing `frontend/src/modules/` directory is starter scaffolding, not a competing architecture; do not create new feature work there unless the project owner explicitly approves a deviation.
+- The frontend specification defines the target architecture; repository maps must distinguish target structure from directories that currently exist. Do not claim planned folders or routes are already implemented.
 - Keep tests close to the backend test convention unless a module establishes a clearer shared convention. Update `docs/TESTING.md` with the actual command.
 
 ## 5. Functional modules, prerequisites and current state
@@ -123,7 +129,7 @@ Module numbering is the project roadmap. Module completion means its own accepta
 - User confirmed all migrations were applied to the development database.
 
 **Remaining / ownership:**
-- Frontend foundation is being handled by the frontend teammate. `frontend/DESIGN.md` is the visual authority; do not overwrite or redesign it as part of backend/documentation work.
+- Frontend foundation is being handled by the frontend teammate. Follow `frontend/SPECIFICATION.md` as the canonical frontend implementation and visual authority. `frontend/DESIGN.md` is a short entry point; do not treat its former provisional TBDs or sidebar layout as current requirements.
 - Reconfirm frontend foundation completion with its owner before declaring every M0 workstream closed.
 - API surface, authentication, feature routes and full application flows belong to their functional modules, not to M0 merely because the server scaffold exists.
 
@@ -135,14 +141,24 @@ Module numbering is the project roadmap. Module completion means its own accepta
 
 **Scope:** registration, login, logout/session lifecycle, password hashing, authentication middleware, USER/ADMIN authorization, profile management, protected routes and account lifecycle enforcement.
 
-**TODO:**
-- Implement registration/login/logout and session/token strategy.
-- Hash passwords; never store or return plaintext passwords.
-- Implement authentication and role/ownership middleware.
-- Enforce `isActive = true` and `deletedAt IS NULL` for eligible account actions.
-- Implement profile APIs and ownership checks.
-- Implement account soft-deletion workflow, session revocation and pending-order handling in accordance with `docs/DECISIONS.md`.
-- Add API and security tests.
+**Implemented in the current project state:**
+- Registration, login, logout, logout-others, logout-all and password change.
+- Opaque, database-backed sessions with a 30-day sliding expiry; activity and expiry are persisted at most once every five minutes per session.
+- Session-bound CSRF protection using a deterministic HMAC derivation, so the token survives a page reload without ever being stored in the clear.
+- Profile read/update, with email and password immutable through the profile endpoints.
+- PostgreSQL-backed authentication rate limiting with keyed HMAC identifiers, fixed cooldowns, independent buckets and trusted-proxy handling.
+- A separate append-only `SecurityAuditLog` for security and account events.
+- The interactive `npm run admin:bootstrap` administrator bootstrap.
+- Administrator user listing, details, suspension, reactivation and security-audit access.
+- Reusable hand-written validation, centralised error handling and validated environment configuration.
+
+**Remaining / ownership:**
+- Email verification, email change, forgot-password and password-reset flows are out of scope by decision; email is immutable through the profile endpoints.
+- The full account-closure workflow (pending-order cancellation, resource release, settlement consent, anonymisation) is still outstanding and remains open in `docs/DECISIONS.md`.
+- The ER diagram and `docs/er_source/` are a Module 0 snapshot and must be regenerated by the project owner against the current schema.
+- The frontend integration must coordinate the exact CORS origins with the frontend owner; the backend does not assume any deployment URL.
+
+**M1 exit:** registration, authentication, session lifecycle, CSRF, profile, rate limiting, auditing and administrator management are implemented and verified; the outstanding account-closure workflow is tracked as an open decision.
 
 ### M2 — Learning Management
 
@@ -205,7 +221,7 @@ Module numbering is the project roadmap. Module completion means its own accepta
 - Implement watchlist CRUD and ownership enforcement.
 - Persist chart configurations.
 - Handle loading, empty, stale and error states.
-- Follow `frontend/DESIGN.md`; test responsive behavior and chart usability.
+- Follow `frontend/SPECIFICATION.md`; test responsive behavior and chart usability.
 
 ### M6 — Paper Trading
 
@@ -322,4 +338,4 @@ A module is done when its documented scope and acceptance criteria are met, rele
 
 ## 10. Conflict handling
 
-Explicitly approved project-owner decisions take precedence over assumptions or generic recommendations. `docs/DECISIONS.md` is authoritative for approved product/data/business rules; `frontend/DESIGN.md` is authoritative for visual design; `docs/TESTING.md` is authoritative for test commands and module handoff notes. If two authoritative sources conflict and no later approved decision resolves it, stop and raise the conflict rather than guessing.
+Explicitly approved project-owner decisions take precedence over assumptions or generic recommendations. `docs/DECISIONS.md` is authoritative for approved product/data/business rules; `frontend/SPECIFICATION.md` is authoritative for frontend engineering and visual design; `frontend/DESIGN.md` is an entry point that must not introduce conflicting standards; `docs/TESTING.md` is authoritative for test commands and module handoff notes. The frontend specification does not override the product roadmap or module scope in this file: M2/M3 learning and assessment experiences must use the same frontend design system. If two authoritative sources conflict and no later approved decision resolves it, stop and raise the conflict rather than guessing.

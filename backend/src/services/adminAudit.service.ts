@@ -73,7 +73,7 @@ function buildWhere(query: AdminAuditLogQuery): Prisma.SecurityAuditLogWhereInpu
   }
 
   if (query.action) {
-    where.eventType = query.action;
+    where.eventType = { contains: query.action, mode: "insensitive" };
   }
 
   if (query.createdFrom || query.createdTo) {

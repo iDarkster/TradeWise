@@ -1,0 +1,82 @@
+/**
+ * TradeWise Theme Variables
+ * Canonical Specification: frontend/SPECIFICATION.md §4.1
+ */
+
+[data-theme="light"] {
+  color-scheme: light;
+  --color-bg-base: #FFFFFF;
+  --color-bg-page: #FFFFFF;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-2: #F5F5F6;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-footer: #EFF0F2;
+  --color-brand-primary: #00B386;
+  --color-brand-hover: #007A5B;
+  --color-text-primary: #2F3038;
+  --color-text-secondary: #6B6E7A;
+  --color-text-muted: #6B6E7A;
+  --color-text-on-accent: #FFFFFF;
+  --color-border-default: #E6E7EB;
+  --color-border-hover: #DCDDE2;
+  --color-divider: #EDEEF1;
+  --color-divider-dashed: #DCDDE2;
+  --color-success: #00B386;
+  --color-success-text: #007A5B;
+  --color-success-bg: #E5F7F2;
+  --color-danger: #EB4B3C;
+  --color-danger-text: #C93A2D;
+  --color-danger-bg: #FDECEA;
+  --color-warning: #F5B829;
+  --color-info: #5367FF;
+  --color-link: #007A5B;
+  --color-link-alt: #5367FF;
+  --color-focus: #5367FF;
+  --color-state-hover: rgba(0, 0, 0, 0.04);
+  --color-state-pressed: rgba(0, 0, 0, 0.08);
+  --color-chart-bg: #FFFFFF;
+  --color-chart-grid: #EEEFF2;
+  --color-chart-up: #00B386;
+  --color-chart-down: #EB4B3C;
+  --color-scrim: rgba(0, 0, 0, 0.4);
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg-base: #0A0B0D;
+  --color-bg-page: #0A0B0D;
+  --color-bg-surface: #121316;
+  --color-bg-surface-2: #17181B;
+  --color-bg-elevated: #17181B;
+  --color-bg-footer: #0F1012;
+  --color-brand-primary: #2FD3A5;
+  --color-brand-hover: #00B386;
+  --color-text-primary: #F2F3F5;
+  --color-text-secondary: #A0A3AD;
+  --color-text-muted: #A0A3AD;
+  --color-text-on-accent: #04140F;
+  --color-border-default: #2A2C31;
+  --color-border-hover: #3E4149;
+  --color-divider: #24262A;
+  --color-divider-dashed: #34363B;
+  --color-success: #2FD3A5;
+  --color-success-text: #2FD3A5;
+  --color-success-bg: #12332B;
+  --color-danger: #FF6B5E;
+  --color-danger-text: #FF8A80;
+  --color-danger-bg: #3A1B18;
+  --color-warning: #F5C451;
+  --color-info: #7B8AFF;
+  --color-link: #2FD3A5;
+  --color-link-alt: #7B8AFF;
+  --color-focus: #7B8AFF;
+  --color-state-hover: rgba(255, 255, 255, 0.06);
+  --color-state-pressed: rgba(255, 255, 255, 0.10);
+  --color-chart-bg: #111214;
+  --color-chart-grid: #1C1D21;
+  --color-chart-up: #2FD3A5;
+  --color-chart-down: #FF6B5E;
+  --color-scrim: rgba(0, 0, 0, 0.6);
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.6);
+}

@@ -1,0 +1,122 @@
+.filtersBar {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.inputWrapper {
+  flex: 1;
+  min-width: 220px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface);
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--fs-body);
+}
+
+.th {
+  background-color: var(--color-bg-surface-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border-default);
+  white-space: nowrap;
+}
+
+.td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-divider);
+  color: var(--color-text-primary);
+  vertical-align: top;
+}
+
+.tr:hover {
+  background-color: var(--color-state-hover);
+}
+
+.colTimestamp {
+  min-width: 160px;
+  width: 160px;
+}
+
+.colAction {
+  min-width: 170px;
+  width: 170px;
+}
+
+.colActor {
+  min-width: 160px;
+  width: 160px;
+}
+
+.colTarget {
+  min-width: 160px;
+  width: 160px;
+}
+
+.colMetadata {
+  min-width: 280px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.metadataPre {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  line-height: 1.45;
+  background-color: var(--color-bg-surface-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-default);
+  width: 100%;
+  max-width: 100%;
+  min-width: 260px;
+  max-height: 160px;
+  overflow: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+  padding: var(--space-2) 0;
+  font-size: var(--fs-caption);
+  color: var(--color-text-secondary);
+}
+
+.paginationControls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.loadingOrEmpty {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+}

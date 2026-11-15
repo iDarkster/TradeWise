@@ -331,6 +331,41 @@ describe("administrator audit log API", () => {
     expect(empty.body.data.events).toHaveLength(0);
   });
 
+  it("matches audit actions case-insensitively and on partial substrings", async () => {
+    const admin = await createAdminSession();
+    const learner = trackUser(await createUserDirect());
+
+    await request(app)
+      .post("/api/auth/login")
+      .send({ identifier: learner.email, password: "WrongPass1!" });
+
+    // Lowercase match
+    const byLowercase = await request(app)
+      .get("/api/admin/audit-logs?action=login_failed")
+      .set("Cookie", admin.cookie);
+
+    expect(byLowercase.status).toBe(200);
+    expect(byLowercase.body.data.events.length).toBeGreaterThan(0);
+    expect(
+      byLowercase.body.data.events.every((event: { action: string }) =>
+        event.action.toLowerCase().includes("login_failed"),
+      ),
+    ).toBe(true);
+
+    // Partial substring match
+    const byPartial = await request(app)
+      .get("/api/admin/audit-logs?action=failed")
+      .set("Cookie", admin.cookie);
+
+    expect(byPartial.status).toBe(200);
+    expect(byPartial.body.data.events.length).toBeGreaterThan(0);
+    expect(
+      byPartial.body.data.events.every((event: { action: string }) =>
+        event.action.toLowerCase().includes("failed"),
+      ),
+    ).toBe(true);
+  });
+
   it("filters by actor", async () => {
     const admin = await createAdminSession();
     const learner = trackUser(await createUserDirect());
