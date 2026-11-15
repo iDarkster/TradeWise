@@ -1,0 +1,87 @@
+/**
+ * TradeWise Design Tokens
+ * Canonical Specification: frontend/SPECIFICATION.md §4.1
+ */
+
+:root {
+  /* Brand primitives */
+  --p-green-500: #00B386;
+  --p-green-700: #007A5B;
+  --p-green-400: #2FD3A5;
+  --p-indigo-500: #5367FF;
+  --p-indigo-300: #7B8AFF;
+  --p-red-500: #EB4B3C;
+  --p-red-700: #C93A2D;
+  --p-red-400: #FF6B5E;
+
+  /* Neutral primitives */
+  --p-white: #FFFFFF;
+  --p-grey-50: #F5F5F6;
+  --p-grey-100: #EFF0F2;
+  --p-grey-200: #E6E7EB;
+  --p-grey-500: #9A9DA8;
+  --p-grey-600: #6B6E7A;
+  --p-grey-900: #2F3038;
+
+  /* Typography */
+  --font-sans: Inter, "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* Type scale */
+  --fs-display: 36px;
+  --lh-display: 44px;
+  --fs-h1: 28px;
+  --lh-h1: 36px;
+  --fs-h2: 24px;
+  --lh-h2: 32px;
+  --fs-h3: 20px;
+  --lh-h3: 28px;
+  --fs-h4: 18px;
+  --lh-h4: 24px;
+  --fs-body-lg: 16px;
+  --lh-body-lg: 24px;
+  --fs-body: 14px;
+  --lh-body: 20px;
+  --fs-caption: 12px;
+  --lh-caption: 16px;
+
+  /* Spacing: 4px base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Shape */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout */
+  --container-max: 1036px;
+  --content-gutter: 28px;
+  --header-height: 64px;
+  --subnav-height: 56px;
+  --ticker-height: 44px;
+
+  /* Aliases */
+  --radius-full: var(--radius-pill);
+  --fs-body-large: var(--fs-body-lg);
+  --fs-body-small: var(--fs-caption);
+}

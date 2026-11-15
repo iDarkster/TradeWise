@@ -1,0 +1,93 @@
+.topActions {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.sessionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sessionItem {
+  background-color: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.sessionItem.current {
+  border-color: rgba(47, 211, 165, 0.4);
+  background-color: rgba(47, 211, 165, 0.03);
+}
+
+.sessionInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sessionIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+}
+
+.sessionDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sessionClient {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sessionMeta {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--fs-body);
+}
+
+.successBanner {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid rgba(47, 211, 165, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-body-small);
+  margin-bottom: var(--space-4);
+}
+
+.errorBanner {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  border: 1px solid rgba(255, 107, 94, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-body-small);
+  margin-bottom: var(--space-4);
+}

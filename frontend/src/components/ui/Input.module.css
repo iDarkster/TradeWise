@@ -1,0 +1,99 @@
+.fieldContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+}
+
+.label {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-secondary);
+}
+
+.required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  background-color: var(--color-bg-surface-2);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input:focus {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 1px var(--color-focus);
+}
+
+.input.hasError {
+  border-color: var(--color-danger);
+}
+
+.input.hasError:focus {
+  box-shadow: 0 0 0 1px var(--color-danger);
+}
+
+.input.hasToggle {
+  padding-right: 40px;
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--color-bg-surface);
+}
+
+.toggleButton {
+  position: absolute;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.toggleButton:hover {
+  color: var(--color-text-primary);
+}
+
+.toggleButton:focus-visible {
+  outline: 2px solid var(--color-focus);
+}
+
+.errorText {
+  font-size: var(--fs-caption);
+  color: var(--color-danger);
+  margin-top: 2px;
+}
+
+.helperText {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}

@@ -1,113 +1,34 @@
-# TradeWise — Design System & Visual Guidelines
+# TradeWise — Frontend Design Entry Point
 
-**Read before creating or materially changing frontend UI.** This document is the visual source of truth for all modules.
+**Read this file before frontend work, then read [`SPECIFICATION.md`](./SPECIFICATION.md) in full.**
 
-## 1. Objective
-TradeWise must feel like one coherent product, not independently designed module websites. Learning can feel approachable and explanatory; market/trading can feel analytical and information-dense. Both must share typography, color logic, spacing, components, navigation and interaction patterns.
+## Authority
 
-## 2. Provisional visual direction
-- Modern, clean fintech interface.
-- Clear hierarchy and readable financial information.
-- Meaningful color; avoid decoration for its own sake.
-- Avoid excessive gradients, glassmorphism, glowing borders and oversized rounded cards.
-- Consistent alignment and spacing.
-- Responsive core workflows and accessible interactions.
+[`SPECIFICATION.md`](./SPECIFICATION.md) is the **single canonical frontend engineering specification** for TradeWise. It supersedes the provisional visual placeholders and earlier layout assumptions previously recorded in this file.
 
-This is a direction, **not a finalized brand palette**. Do not invent final values per module.
+Use the specification for:
+- Product-facing frontend scope and technical stack.
+- Light and dark themes, design tokens, typography, spacing and breakpoints.
+- Application shell, navigation, canonical routes and responsive behavior.
+- Shared component architecture and domain feature-slice organization.
+- Forms, validation, API state, accessibility and interaction behavior.
+- Loading, empty, error, offline and success states.
+- Frontend testing and implementation standards.
 
-## 3. Team decisions to finalize
-| Decision | Agreed value |
-|---|---|
-| Overall theme | TBD |
-| Primary / secondary / accent colors | TBD |
-| Background / surface / border colors | TBD |
-| Text / muted text colors | TBD |
-| Success / warning / danger colors | TBD |
-| Font family and type scale | TBD |
-| Spacing scale | TBD |
-| Radius and elevation scale | TBD |
-| Responsive breakpoints | TBD |
-| Icon library | TBD |
-| Chart library | TBD |
+## Shared product principles
 
-When a decision is made, update this table and central tokens. Do not let separate modules make conflicting choices.
+- TradeWise is a trading education and paper-trading application, primarily for Indian markets.
+- The product journey remains **Learn → Visualize → Practice → Improve**.
+- Learning experiences should be approachable and explanatory; market and trading experiences may be more analytical and information-dense. They must still use one coherent design system.
+- Paper trading is simulated. Never imply that the application executes real-money brokerage transactions.
+- The frontend presents data and gathers user input; the backend remains authoritative for permissions, financial calculations, balances, prices, risk checks, order validation and other business-critical rules.
+- Never fake successful authentication, account changes, deposits, withdrawals or trades. Show honest loading, success and failure states based on actual API responses.
+- Use TradeWise-owned branding and assets. Groww is a visual reference only; do not copy its logo, proprietary assets or claim affiliation.
 
-## 4. Centralized design tokens
-Implement tokens centrally (for example CSS custom properties in a shared stylesheet). Components should consume tokens rather than repeat raw values.
+## Scope and conflict handling
 
-Suggested categories:
-```css
-:root {
-  --color-brand: /* approved value */;
-  --color-accent: /* approved value */;
-  --color-background: /* approved value */;
-  --color-surface: /* approved value */;
-  --color-border: /* approved value */;
-  --color-text: /* approved value */;
-  --color-text-muted: /* approved value */;
-  --color-success: /* approved value */;
-  --color-warning: /* approved value */;
-  --color-danger: /* approved value */;
-  --font-family-base: /* approved value */;
-  --radius-sm: /* approved value */;
-  --radius-md: /* approved value */;
-  --radius-lg: /* approved value */;
-  --space-1: /* approved value */;
-  --space-2: /* approved value */;
-  --space-3: /* approved value */;
-  --space-4: /* approved value */;
-}
-```
-These are placeholders, not production CSS values. Replace only after team agreement.
+`SPECIFICATION.md` defines how frontend work should be implemented. It does **not** change the product roadmap, backend contracts, approved business rules or module ownership in the repository-level [`AGENTS.md`](../AGENTS.md) and [`docs/DECISIONS.md`](../docs/DECISIONS.md).
 
-## 5. Shared React component library
-Location: `frontend/src/components/`
+In particular, the M2 learning and M3 assessment experiences remain part of the product journey and must use the same tokens, shared components, accessibility standards and responsive patterns defined in `SPECIFICATION.md`, even where a route or screen is not illustrated there.
 
-- `ui/`: Button, Input, Select, Checkbox, Card, Badge, Modal, Tabs, table primitives, Tooltip, Skeleton, Spinner, EmptyState, Alert.
-- `layout/`: AppShell, Sidebar, Topbar, PageHeader, Breadcrumbs, MainContent and responsive navigation.
-- `charts/`: ChartContainer, shared tooltip/legend, formatting helpers, loading/empty/error chart states.
-
-A component belongs here when it is genuinely reusable or represents a product-wide pattern. Keep module-specific business compositions inside the relevant module.
-
-## 6. Component rules
-- Search for an existing component before creating one.
-- Prefer composition and documented variants over duplicate components.
-- Use consistent prop naming and predictable APIs.
-- Generic UI components should not contain module-specific business rules or hidden data fetching.
-- Use semantic HTML, accessible names, keyboard behavior and visible focus.
-- Handle disabled, loading, error and empty states where relevant.
-- Avoid fragile DOM-dependent styling and unapproved second styling systems.
-
-## 7. Layout and navigation
-- Use a shared application shell for authenticated areas.
-- Keep sidebar/topbar behavior consistent.
-- Use consistent page headers, content widths and section spacing.
-- Responsive layouts must preserve important actions and financial information.
-- Do not create unrelated navigation systems per module.
-
-## 8. Charts and financial UI
-- Format currency, numbers, dates and percentages consistently; make currency explicit (MVP primarily INR).
-- Positive/negative values need consistent semantic treatment; never rely on color alone.
-- Distinguish provider market data, simulated paper-trading data and synthetic educational scenarios.
-- Show freshness/staleness when relevant.
-- Keep chart colors, gridlines, tooltips and timeframes consistent.
-- Clearly label paper trading as simulated.
-
-## 9. Interaction and accessibility states
-Consider default, hover, focus, active, disabled, loading, success and error. Data-driven views should also handle initial loading, empty results, stale data, API failure and permission denial.
-
-Support agreed viewports, avoid horizontal overflow in core journeys, maintain contrast, provide keyboard access and meaningful labels, and respect reduced-motion preferences.
-
-## 10. Visual review checklist
-- [ ] Looks like TradeWise, not a separate website.
-- [ ] Reuses shared layout/components where appropriate.
-- [ ] Uses approved tokens.
-- [ ] Typography, spacing, radii and colors are consistent.
-- [ ] Loading, empty and error states are handled.
-- [ ] Responsive behavior checked.
-- [ ] Keyboard focus and accessible labels present.
-- [ ] Financial values and charts formatted consistently.
-- [ ] PR includes screenshots or visual notes when useful.
-
-## 11. Changing the design system
-Before adding a shared token/component/pattern: check for an existing equivalent, explain the need, update this document if the project-wide rule changes, implement centrally when appropriate, and mention the change in the PR. Do not make a product-wide visual decision inside one module without recording it here.
+If this entry point and `SPECIFICATION.md` appear to disagree, follow `SPECIFICATION.md`. If the frontend specification conflicts with an explicitly approved product or business decision, stop and raise the conflict rather than silently changing product scope or backend behavior.

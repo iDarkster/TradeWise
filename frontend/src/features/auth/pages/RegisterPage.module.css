@@ -1,0 +1,117 @@
+.pageContainer {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.registerCard {
+  width: 100%;
+  max-width: 480px;
+}
+
+.brandHeader {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-on-accent);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-h4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.errorBanner {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  border: 1px solid rgba(255, 107, 94, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-body-small);
+  line-height: var(--lh-body);
+}
+
+.passwordRequirements {
+  background-color: var(--color-bg-surface-2);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-top: -4px;
+}
+
+.reqTitle {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.reqList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--fs-caption);
+}
+
+.reqItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.reqItem.valid {
+  color: var(--color-success);
+}
+
+.reqItem.invalid {
+  color: var(--color-text-muted);
+}
+
+.footerText {
+  text-align: center;
+  font-size: var(--fs-body);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-6);
+}
+
+.link {
+  color: var(--color-brand-primary);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
